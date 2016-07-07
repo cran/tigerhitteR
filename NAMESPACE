@@ -2,6 +2,8 @@
 
 export(dateRefill.fromData)
 export(dateRefill.fromsFile)
+import(Hmisc)
 import(openxlsx)
 import(zoo)
 importFrom(utils,head)
+importFrom(utils,install.packages)

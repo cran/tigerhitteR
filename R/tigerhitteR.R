@@ -8,8 +8,8 @@
 #' @param fixedVec  A row of column number which should be kept same values with the original
 #' @param pChanged The column number which should be changed to different value into new record.
 #' @param pChangedNum The value of a specific column which should be put into the new record.
-#' @import zoo openxlsx
-#' @importFrom utils head
+#' @import openxlsx zoo Hmisc
+#' @importFrom utils head install.packages
 #' @details Real time series sales dataset could be not continuous in 'date' field. e.g., monthly sales data is continuous,
 #'  but discrete in daily data.
 #'
@@ -22,15 +22,24 @@ dateRefill.fromsFile <-
   function(inPath, sheet, dateCol, outPath, fixedVec, pChanged, pChangedNum)
   {
     if(!requireNamespace("openxlsx",quietly = TRUE)){
-      stop("Please install package 'openxlsx'")
+      install.packages("openxlsx"); requireNamespace("openxlsx", quietly = TRUE)
+      #stop("Please install package 'openxlsx'. ")
     }else{
       requireNamespace("openxlsx", quietly = TRUE)
     }
 
     if(!requireNamespace("zoo", quietly = TRUE)){
-      stop("Please install package 'zoo'")
+      install.packages("zoo"); requireNamespace("zoo", quietly = TRUE)
+      #stop("Please install package 'zoo'. ")
     }else{
       requireNamespace("zoo", quietly = TRUE)
+    }
+
+    if(!requireNamespace("Hmisc",quietly = TRUE)){
+      install.packages("Hmisc"); requireNamespace("Hmisc", quietly = TRUE)
+      #stop("Please install package 'Hmisc'. ")
+    }else{
+      requireNamespace("Hmisc", quietly = TRUE)
     }
 
     data <- openxlsx::read.xlsx(inPath, sheet)
@@ -42,8 +51,7 @@ dateRefill.fromsFile <-
 
     data$Date <- as.POSIXlt(data$Date) # transform to POSIXlt type
 
-    y.min <- min(data$Date$year + 1900)
-    y.max <- max(data$Date$year + 1900)
+    year.list <- levels(factor(data$Date$year + 1900))
 
     ### sorting data
     inc.order <- order(data$Date, decreasing = FALSE)
@@ -60,10 +68,15 @@ dateRefill.fromsFile <-
     diff <- zoo::as.Date(data[1,2])-origin
     rm(year)
 
-    days <- as.numeric((y.max-y.min+1)*365-diff)
+    daySum <- 0
+    for(x in year.list)
+    {
+      daySum <- daySum + Hmisc::yearDays(zoo::as.Date(paste(x, "-01-01", sep = "")))
+    }
+    daySum <- as.numeric(daySum - diff)
 
-    final.data[1:days,] <- NA # remove first few null days because data is not start on 1/1
-    final.data[,2] <- seq(data[1,2], by = "1 days", length.out = days)
+    final.data[1:daySum,] <- NA # remove first few null days because data is not start on 1/1
+    final.data[,2] <- seq(data[1,2], by = "1 days", length.out = daySum)
 
     #### setting rownames
     rownames(data) <- c(1:nrow(data))
@@ -71,7 +84,7 @@ dateRefill.fromsFile <-
     my.index <- match(data$Date, as.POSIXlt(final.data$Date))
     final.data[my.index,] <- data[,]
 
-    for(i in days:1)
+    for(i in daySum:1)
     {
       if(!is.na(final.data[i,1])){
         tag <- i
@@ -91,7 +104,7 @@ dateRefill.fromsFile <-
       }
     }
 
-    final.data$Date <- as.Date(final.data$Date) # for correcting date time in excel
+    final.data$Date <- zoo::as.Date(final.data$Date) # for correcting date time in excel
 
     colnames(final.data) <- colNameVector
 
@@ -108,7 +121,8 @@ dateRefill.fromsFile <-
 #' @param fixedVec  A row of column number which should be kept same values with the original
 #' @param pChanged The column number which should be changed to different value into new record.
 #' @param pChangedNum The value of a specific column which should be put into the new record.
-#' @import zoo openxlsx
+#' @import zoo Hmisc
+#' @importFrom utils head install.packages
 #' @return The dataset which is completed.
 #' @details Real time series sales dataset could be not continuous in 'date' field. e.g., monthly sales data is continuous,
 #'  but discrete in daily data.
@@ -124,9 +138,17 @@ dateRefill.fromData <-
   function(data, dateCol, fixedVec, pChanged, pChangedNum)
   {
     if(!requireNamespace("zoo", quietly = TRUE)){
-      stop("Please install package 'zoo'")
+      install.packages("zoo"); requireNamespace("zoo", quietly = TRUE)
+      #stop("Please install package 'zoo'. ")
     }else{
       requireNamespace("zoo", quietly = TRUE)
+    }
+
+    if(!requireNamespace("Hmisc",quietly = TRUE)){
+      install.packages("Hmisc"); requireNamespace("Hmisc", quietly = TRUE)
+      #stop("Please install package 'Hmisc'. ")
+    }else{
+      requireNamespace("Hmisc", quietly = TRUE)
     }
 
     data <- data.frame(data)
@@ -138,8 +160,7 @@ dateRefill.fromData <-
 
     data$Date <- as.POSIXlt(data$Date) # transform to POSIXlt type
 
-    y.min <- min(data$Date$year + 1900)
-    y.max <- max(data$Date$year + 1900)
+    year.list <- levels(factor(data$Date$year + 1900))
 
     ### sorting data
     inc.order <- order(data$Date, decreasing = FALSE)
@@ -156,10 +177,15 @@ dateRefill.fromData <-
     diff <- zoo::as.Date(data[1,2])-origin
     rm(year)
 
-    days <- as.numeric((y.max-y.min+1)*365-diff)
+    daySum <- 0
+    for(x in year.list)
+    {
+      daySum <- daySum + Hmisc::yearDays(zoo::as.Date(paste(x, "-01-01", sep = "")))
+    }
+    daySum <- as.numeric(daySum - diff)
 
-    final.data[1:days,] <- NA # remove first few null days because data is not start on 1/1
-    final.data[,2] <- seq(data[1,2], by = "1 days", length.out = days)
+    final.data[1:daySum,] <- NA # remove first few null days because data is not start on 1/1
+    final.data[,2] <- seq(data[1,2], by = "1 days", length.out = daySum)
 
     #### setting rownames
     rownames(data) <- c(1:nrow(data))
@@ -167,7 +193,7 @@ dateRefill.fromData <-
     my.index <- match(data$Date, as.POSIXlt(final.data$Date))
     final.data[my.index,] <- data[,]
 
-    for(i in days:1)
+    for(i in daySum:1)
     {
       if(!is.na(final.data[i,1])){
         tag <- i
@@ -187,7 +213,7 @@ dateRefill.fromData <-
       }
     }
 
-    final.data$Date <- as.Date(final.data$Date) # for correcting date time in excel
+    final.data$Date <- zoo::as.Date(final.data$Date) # for correcting date time in excel
 
     colnames(final.data) <- colNameVector
 

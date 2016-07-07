@@ -1,6 +1,6 @@
-a821679ae390b677a049ee3f5137e185 *DESCRIPTION
-d4b5aaf4fc002307f0b4bc894b837682 *NAMESPACE
-234829e3243e4c3bc034f6f62af9aca8 *R/tigerhitteR.R
+c02a8a36f7530901852f772894317f16 *DESCRIPTION
+d84cc096f71b9e92752dc605d6b9f4d5 *NAMESPACE
+627fa4d7c996179bff929a586bfff62a *R/tigerhitteR.R
 9122cb0ccfb11fb24ff32f2b015572ee *data/data.example.rda
 32fa7739cad4285c6b4aad9a242ec2ea *man/data.example.Rd
 5f523a5b5685c3a5f13ad71268f6c62c *man/dateRefill.fromData.Rd
