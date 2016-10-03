@@ -4,18 +4,19 @@
 \alias{dateRefill.fromData}
 \title{Complete the hollow dataset}
 \usage{
-dateRefill.fromData(data, dateCol, fixedVec, pChanged, pChangedNum)
+dateRefill.fromData(data, dateCol.index, fixedCol.index,
+  uninterpolatedCol.index, uninterpolatedCol.newValue)
 }
 \arguments{
 \item{data}{The data.frame dataset which is ready to be processed}
 
-\item{dateCol}{Date column}
+\item{dateCol.index}{Date column}
 
-\item{fixedVec}{A row of column number which should be kept same values with the original}
+\item{fixedCol.index}{A row of column number which should be kept same values with the original}
 
-\item{pChanged}{The column number which should be changed to different value into new record.}
+\item{uninterpolatedCol.index}{The column number which should be changed to different value into new record.}
 
-\item{pChangedNum}{The value of a specific column which should be put into the new record.}
+\item{uninterpolatedCol.newValue}{The value of a specific column which should be put into the new record.}
 }
 \value{
 The dataset which is completed.
@@ -33,7 +34,7 @@ Real time series sales dataset could be not continuous in 'date' field. e.g., mo
 \examples{
 # mydata <- data.example
 # mydata.final <- dateRefill.fromData(data = mydata,dateCol = 2,fixedVec = c(3:10),
-#                                     pChanged = 11,pChangedNum = 0)
+#                                     uninterpolatedCol.index = 11,uninterpolatedCol.newValue = 0)
 }
 \author{
 Will Kuan
